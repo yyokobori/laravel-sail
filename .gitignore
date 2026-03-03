@@ -14,7 +14,7 @@
 /app/.phpunit.result.cache
 
 # Local configuration（環境ごとの設定は管理しない）
-/conf/local/
+/local/
 
 # Composer
 composer.lock
