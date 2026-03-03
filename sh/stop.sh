@@ -13,11 +13,11 @@ fi
 
 cd "$APP_DIR"
 
-if [ -f vendor/bin/sail ]; then
-  echo "Stopping Sail containers..."
-  ./vendor/bin/sail down
-  echo "Sail containers stopped."
+if [ -f compose.yaml ] || [ -f docker-compose.yml ]; then
+  echo "Stopping Docker Compose containers..."
+  docker compose down
+  echo "Containers stopped."
 else
-  echo "vendor/bin/sail が見つかりません。プロジェクトが未初期化の可能性があります。" >&2
+  echo "compose.yaml または docker-compose.yml が見つかりません。プロジェクトが未初期化の可能性があります。" >&2
   exit 1
 fi
