@@ -11,6 +11,12 @@ BACKEND_DIR="$APP_DIR/backend"
 FRONTEND_DIR="$APP_DIR/frontend"
 LOCAL_DIR="$(cd "$ROOT_DIR/.." && pwd)/conf/local"
 
+# /app/.env.example は運用対象外のため setup 時に削除
+if [ -f "$APP_DIR/.env.example" ]; then
+  rm -f "$APP_DIR/.env.example"
+  echo "削除: $APP_DIR/.env.example"
+fi
+
 # copy helper function
 copy_with_check(){
   local src="$1" dest="$2"
@@ -106,53 +112,24 @@ if [ ! -f "$APP_DIR/compose.yaml" ] && [ ! -f "$APP_DIR/docker-compose.yml" ]; t
   echo "app/compose.yaml を確認してください。"
 fi
 
-# 初回コンテナ起動（キー生成・マイグレーション）
-echo ""
-echo "コンテナを一時起動してキー生成・マイグレーションを行います..."
-cd "$APP_DIR"
-
-if docker compose up -d; then
-  echo "MySQLの起動を待機中..."
-  sleep 10
-  
-  # MySQLが起動するまで待機
-  echo "MySQLの起動確認..."
-  for i in {1..30}; do
-    if docker compose exec mysql mysqladmin ping -h localhost --silent 2>/dev/null; then
-      echo "MySQL起動完了"
-      break
-    fi
-    echo "待機中... ($i/30)"
-    sleep 2
-  done
-  
-  echo "アプリケーションキーを生成..."
-  docker compose exec backend php artisan key:generate || true
-  
-  echo "データベースマイグレーション実行..."
-  docker compose exec backend php artisan migrate --force || true
-  
-  echo "コンテナを停止..."
-  docker compose down
-  
-  echo "storage ディレクトリに権限を付与..."
-  if [ -d "$BACKEND_DIR/storage" ]; then
-    docker run --rm -v "$BACKEND_DIR":/app -w /app alpine:latest chmod -R 777 /app/storage
-  fi
-  
-  echo "所有権を現在のユーザーに設定..."
-  sudo chown -R $(id -u):$(id -g) "$BACKEND_DIR" || true
-else
-  echo "警告: Docker Compose の起動に失敗しました。"
-  echo "compose.yaml の設定を確認してください。"
-fi
-
 echo ""
 echo "✓ セットアップ完了"
 echo ""
-echo "次のステップ:"
-echo "  1. コンテナ起動: ./sh/start.sh"
-echo "  2. バックエンド: http://localhost"
-echo "  3. フロントエンド: http://localhost:5173"
-echo "  4. 停止: ./sh/stop.sh"
+echo "setup ではコンテナを起動しません。以下を実施してください。"
+echo ""
+echo "運用手順:"
+echo "  1. local下（conf/local）の設定ファイルをアプリ用に書き換える"
+echo "     - conf/local/.env.example を最新化し、DB_* / VITE_* を設定"
+echo "     - conf/local/mysql.cnf, conf/local/php.ini も必要に応じて更新"
+echo "  2. コンテナ起動"
+echo "     - cd $APP_DIR"
+echo "     - docker compose up -d"
+echo "  3. generate:key を実行（Laravel APP_KEY 生成）"
+echo "     - cd $APP_DIR"
+echo "     - docker compose exec backend php artisan key:generate"
+echo ""
+echo "推奨（初回起動後に実施）:"
+echo "  - DB起動確認: docker compose exec mysql mysqladmin ping -h localhost --silent"
+echo "  - マイグレーション: docker compose exec backend php artisan migrate --force"
+echo "  - 必要時のみ権限調整: chown -R $(id -u):$(id -g) $BACKEND_DIR"
 echo ""

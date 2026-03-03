@@ -2,6 +2,9 @@
 /app/vendor/
 # app/backend/vendor は Composer 依存物のため Git 管理対象外
 /app/backend/vendor/
+/app/frontend/node_modules/
+/app/frontend/.vite/*
+!/app/frontend/.vite/.gitignore
 /app/node_modules/
 /app/.env
 /app/.env.*.php
