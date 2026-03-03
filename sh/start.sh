@@ -5,17 +5,18 @@ set -euo pipefail
 # 前提条件: setup.sh で初期化が完了していること
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
-# アプリ本体は sh の親ディレクトリ配下の app に存在
+# アプリ本体は sh の親ディレクトリ配下の app/backend に存在
+BACKEND_DIR="$(cd "$ROOT_DIR/.." && pwd)/app/backend"
 APP_DIR="$(cd "$ROOT_DIR/.." && pwd)/app"
 
-if [ ! -d "$APP_DIR" ]; then
-  echo "エラー: アプリケーションディレクトリが見つかりません: $APP_DIR"
+if [ ! -d "$BACKEND_DIR" ]; then
+  echo "エラー: バックエンドディレクトリが見つかりません: $BACKEND_DIR"
   echo "先に setup.sh を実行してください。"
   exit 1
 fi
 
-# .env がなければ example からコピー／localディレクトリの内容で上書き
-LOCAL_DIR="$(cd "$ROOT_DIR/.." && pwd)/local"
+# .env がなければ example からコピー／conf/localディレクトリの内容で上書き
+LOCAL_DIR="$(cd "$ROOT_DIR/.." && pwd)/conf/local"
 
 # copy helper function
 copy_with_check(){
@@ -30,18 +31,57 @@ copy_with_check(){
   fi
 }
 
-if [ ! -f "$APP_DIR/.env" ]; then
-  cp "$APP_DIR/.env.example" "$APP_DIR/.env"
+if [ ! -f "$BACKEND_DIR/.env" ]; then
+  cp "$BACKEND_DIR/.env.example" "$BACKEND_DIR/.env"
   echo ".env を .env.example からコピーしました"
 fi
 
-# local ディレクトリがあれば各種設定を上書き
+# conf/local ディレクトリがあれば設定ファイルを反映
+# 注: mysql.cnf と php.ini は compose.yaml のボリュームマウントで conf/local/ から直接参照
 if [ -d "$LOCAL_DIR" ]; then
-  echo "local ディレクトリから設定ファイルを反映します: $LOCAL_DIR"
-  copy_with_check "$LOCAL_DIR/.env.example" "$APP_DIR/.env"
-  copy_with_check "$LOCAL_DIR/mysql.cnf" "$APP_DIR/mysql.cnf"
-  copy_with_check "$LOCAL_DIR/php.ini" "$APP_DIR/php.ini"
+  echo "conf/local ディレクトリから設定ファイルを反映します: $LOCAL_DIR"
+  copy_with_check "$LOCAL_DIR/.env.example" "$BACKEND_DIR/.env"
 fi
+
+# app/.env も backend/.env と同期（Docker Compose グローバル .env）
+cp "$BACKEND_DIR/.env" "$APP_DIR/.env"
+echo "同期: $BACKEND_DIR/.env -> $APP_DIR/.env"
+
+# === 重要な設定項目のバリデーション ===
+# デグレード（機能喪失）を防ぐため、必須設定項目をチェック
+validate_env_keys() {
+  local env_file="$1"
+  local required_keys=(
+    "DB_HOST" "DB_PORT" "DB_DATABASE" "DB_USERNAME" "DB_PASSWORD"
+    "APP_URL" "VITE_PORT" "VITE_API_BASE_URL"
+    "LOG_CHANNEL" "LOG_LEVEL"
+  )
+  
+  local missing_keys=()
+  for key in "${required_keys[@]}"; do
+    if ! grep -q "^${key}=" "$env_file"; then
+      missing_keys+=("$key")
+    fi
+  done
+  
+  if [ ${#missing_keys[@]} -gt 0 ]; then
+    echo "⚠️  警告: 以下の必須設定項目が .env に見つかりません:"
+    printf '   - %s\n' "${missing_keys[@]}"
+    echo ""
+    echo "これはデグレード（機能喪失）の可能性があります。"
+    echo "確認事項:"
+    echo "  1. conf/local/.env.example が最新に更新されているか確認"
+    echo "  2. app/backend/.env と conf/local/.env.example の内容を同期"
+    echo ""
+    read -p "これは意図的ですか？ (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      exit 1
+    fi
+  fi
+}
+
+validate_env_keys "$BACKEND_DIR/.env"
 
 if [ ! -f "$APP_DIR/docker-compose.yml" ] && [ ! -f "$APP_DIR/compose.yaml" ]; then
   echo "エラー: docker-compose.yml または compose.yaml が見つかりません。"
@@ -51,8 +91,8 @@ fi
 
 cd "$APP_DIR"
 
-if [ ! -f vendor/bin/sail ]; then
-  echo "エラー: vendor/bin/sail が見つかりません。"
+if [ ! -f "backend/vendor/bin/sail" ]; then
+  echo "エラー: backend/vendor/bin/sail が見つかりません。"
   exit 1
 fi
 
@@ -61,8 +101,8 @@ echo "Sail コンテナの起動"
 echo "================================"
 echo ""
 
-echo "[1/3] Sail コンテナを起動します (./vendor/bin/sail up -d)"
-./vendor/bin/sail up -d
+echo "[1/2] Docker Compose でコンテナを起動します (docker compose up -d)"
+docker compose up -d
 
 echo "[2/2] コンテナの初期化は setup.sh で行われています。必要であれば手動で artisan コマンドを実行してください。"
 
@@ -70,8 +110,9 @@ echo ""
 echo "✓ 起動完了！"
 echo ""
 echo "確認:"
-echo "  - ブラウザで http://localhost にアクセス"
-echo "  - コンテナログ確認: ./vendor/bin/sail logs -f"
+echo "  - バックエンド: http://localhost"
+echo "  - フロントエンド: http://localhost:5173"
+echo "  - コンテナログ確認: cd \$PWD && docker compose logs -f"
 echo "  - 停止: ./stop.sh"
 echo "  - 再起動: ./restart.sh"
 echo ""

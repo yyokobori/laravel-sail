@@ -16,6 +16,10 @@
 /public/build
 /public/hot
 /public/storage
+/public/assets
+/public/index.html
+/public/.vite
+/public/manifest.json
 /storage/*.key
 /storage/pail
 /vendor
