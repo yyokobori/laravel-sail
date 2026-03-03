@@ -104,7 +104,72 @@ echo ""
 echo "[1/2] Docker Compose でコンテナを起動します (docker compose up -d)"
 docker compose up -d
 
-echo "[2/2] コンテナの初期化は setup.sh で行われています。必要であれば手動で artisan コマンドを実行してください。"
+echo "[2/2] 起動後の初期化処理を確認します"
+
+# APP_KEY が未設定の場合のみ生成
+if ! grep -q '^APP_KEY=base64:' "$BACKEND_DIR/.env"; then
+  echo "APP_KEY が未設定のため生成します..."
+  if docker compose exec -T backend php artisan key:generate --force; then
+    cp "$BACKEND_DIR/.env" "$APP_DIR/.env"
+    echo "APP_KEY を生成し、$APP_DIR/.env に同期しました"
+  else
+    echo "警告: APP_KEY の生成に失敗しました。手動で実行してください:"
+    echo "  docker compose exec -T backend php artisan key:generate --force"
+  fi
+else
+  echo "APP_KEY は既に設定済みです。"
+fi
+
+# マイグレーション実行可否を確認（y の場合のみ実行）
+read -p "マイグレーションを実行しますか？ (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "マイグレーションを実行します..."
+  if ! docker compose exec -T backend php artisan migrate --force; then
+    echo "警告: マイグレーションに失敗しました。ログを確認してください。"
+  fi
+else
+  echo "マイグレーションはスキップしました。"
+fi
+
+# storage の権限/所有者が適切でない場合のみ補正
+if [ -d "$BACKEND_DIR/storage" ]; then
+  need_fix=0
+  current_uid="$(stat -c %u "$BACKEND_DIR/storage")"
+  current_gid="$(stat -c %g "$BACKEND_DIR/storage")"
+
+  if [ "$current_uid" -ne "$(id -u)" ] || [ "$current_gid" -ne "$(id -g)" ]; then
+    need_fix=1
+  fi
+
+  if [ ! -w "$BACKEND_DIR/storage" ]; then
+    need_fix=1
+  fi
+
+  if [ "$need_fix" -eq 1 ]; then
+    echo "storage の権限/所有者を補正します..."
+    if ! chown -R "$(id -u):$(id -g)" "$BACKEND_DIR/storage" 2>/dev/null; then
+      sudo chown -R "$(id -u):$(id -g)" "$BACKEND_DIR/storage" || true
+    fi
+    chmod -R ug+rwX "$BACKEND_DIR/storage" || true
+  else
+    echo "storage の権限/所有者は適切です。"
+  fi
+
+  # storage 配下はフォルダのみ管理し、生成ファイルは都度除外する
+  echo "storage 配下の生成ファイルを整理します..."
+  cleanup_dirs=(
+    "$BACKEND_DIR/storage/framework/sessions"
+    "$BACKEND_DIR/storage/framework/views"
+    "$BACKEND_DIR/storage/framework/cache/data"
+  )
+
+  for cleanup_dir in "${cleanup_dirs[@]}"; do
+    if [ -d "$cleanup_dir" ]; then
+      find "$cleanup_dir" -type f ! -name '.gitignore' -delete || true
+    fi
+  done
+fi
 
 echo ""
 echo "✓ 起動完了！"
