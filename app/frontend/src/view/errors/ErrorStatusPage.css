@@ -1,0 +1,23 @@
+.errorStatusPage {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  background: #ffffff;
+  text-align: center;
+  gap: 12px;
+}
+
+.errorStatusPage__code {
+  margin: 0;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111827;
+}
+
+.errorStatusPage__summary {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #374151;
+}
