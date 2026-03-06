@@ -35,6 +35,7 @@ src/
 - 新規画面は `src/view/{public|user|admin}` 配下に配置する。
 - エラー画面は `src/view/errors` 配下で管理する。
 - 再利用可能な UI は `src/component` 配下に配置する。
+- コンポーネント構成の詳細は `ai/03.03_component.md` を参照する。
 - TypeScript の型を省略しない（props, 戻り値, API レスポンス）。
 - 関数コメントは JSDoc 形式を使用する。
 - API 呼び出しは `src/api` に集約し、画面コンポーネントから直接 `fetch` しない。
