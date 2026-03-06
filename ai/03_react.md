@@ -18,24 +18,42 @@
 ```
 src/
   view/
-    public/   # ログイン不要関連
-    user/     # ユーザログイン画面関連
-    admin/    # 管理画面関連
-      errors/   # エラー画面関連
-  component/  # 共通コンポーネント
-   template/   # public/user/admin 共通テンプレート
-   api/        # API呼び出し層
-   types/      # 型定義
+      public/
+      user/
+      admin/
+      errors/
+   component/
+      form/
+      table/
+      modal/
+      ...
+   template/
+   api/
+   types/
+   hooks/
 ```
 
-補足:
-- `src/` 直下には原則としてトップレベルの最小ファイルのみ配置する。
+## 各フォルダの役割
+- `view/`
+   - 画面単位の構成と表示制御を担当する。
+   - 区分は `public / user / admin / errors` とする。
+   - 直接API通信は `api/` または `hooks/` を経由する。
+- `component/`
+   - 再利用UI部品を担当する。
+   - `component/***/` 形式で配置し、`component/` 直下にファイルを置かない。
+   - 詳細ルールは `ai/03.03_component.md` を参照する。
+- `template/`
+   - `public / user / admin` の共通レイアウト枠を担当する。
+   - `reset.css` と `tailwind.css` の読み込み起点とする。
+- `api/`
+   - バックエンド通信処理を担当する。
+   - API呼び出し実体はこの配下に集約する。
+- `types/`
+   - 共通型・API関連型・画面利用型を管理する。
+- `hooks/`
+   - 再利用可能な状態管理・副作用処理を担当する。
 
 ## 実装ルール（確定）
-- 新規画面は `src/view/{public|user|admin}` 配下に配置する。
-- エラー画面は `src/view/errors` 配下で管理する。
-- 再利用可能な UI は `src/component` 配下に配置する。
-- コンポーネント構成の詳細は `ai/03.03_component.md` を参照する。
 - TypeScript の型を省略しない（props, 戻り値, API レスポンス）。
 - 関数コメントは JSDoc 形式を使用する。
 - API 呼び出しは `src/api` に集約し、画面コンポーネントから直接 `fetch` しない。
@@ -224,3 +242,8 @@ src/
 ## 非採用（現時点）
 - Sass は採用しない。
 - 理由: 依存増加を避け、テンプレートの汎用性と保守性を優先するため。
+
+## 関連仕様
+- role管理: `ai/04_role.md`
+- 認証フロー: `ai/04.01_auth.md`
+- Config管理: `ai/03.06_config.md`
