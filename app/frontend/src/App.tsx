@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ForbiddenPage, NotFoundPage, ServerErrorPage } from './view/errors';
+import { FormDemoPage } from './view/public/demo/FormDemoPage';
 import PublicTemplate from './template/PublicTemplate';
 import UserTemplate from './template/UserTemplate';
 import AdminTemplate from './template/AdminTemplate';
@@ -32,6 +33,14 @@ const appRouter = createBrowserRouter([
     element: (
       <PublicTemplate>
         <PlaceholderPage title="Login" />
+      </PublicTemplate>
+    ),
+  },
+  {
+    path: '/demo/form',
+    element: (
+      <PublicTemplate>
+        <FormDemoPage />
       </PublicTemplate>
     ),
   },
