@@ -58,6 +58,30 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'develop' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/develop.log'),
+            'level' => 'debug',
+            'days' => env('LOG_DEVELOP_DAYS', 7),
+            'replace_placeholders' => true,
+        ],
+
+        'error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/error.log'),
+            'level' => 'warning',
+            'days' => env('LOG_ERROR_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'info' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/info.log'),
+            'level' => 'info',
+            'days' => env('LOG_INFO_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
