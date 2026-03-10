@@ -58,12 +58,14 @@ return [
             'ignore_exceptions' => false,
         ],
 
+
         'develop' => [
             'driver' => 'daily',
             'path' => storage_path('logs/develop.log'),
             'level' => 'debug',
             'days' => env('LOG_DEVELOP_DAYS', 7),
             'replace_placeholders' => true,
+            'formatter' => App\Logging\Formatters\CustomLineFormatter::class,
         ],
 
         'error' => [
@@ -72,6 +74,7 @@ return [
             'level' => 'warning',
             'days' => env('LOG_ERROR_DAYS', 14),
             'replace_placeholders' => true,
+            'formatter' => App\Logging\Formatters\CustomLineFormatter::class,
         ],
 
         'info' => [
@@ -80,6 +83,7 @@ return [
             'level' => 'info',
             'days' => env('LOG_INFO_DAYS', 14),
             'replace_placeholders' => true,
+            'formatter' => App\Logging\Formatters\CustomLineFormatter::class,
         ],
 
         'single' => [
