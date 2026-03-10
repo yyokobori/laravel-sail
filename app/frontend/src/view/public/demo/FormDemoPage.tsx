@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import {
+  Select,
   Input,
   Radio,
+  Checkbox,
+  Textarea,
   DEFAULT_INPUT_STYLES,
   ERROR_INPUT_STYLES,
   SUCCESS_INPUT_STYLES,
   DEFAULT_RADIO_STYLES,
   ERROR_RADIO_STYLES,
+  DEFAULT_CHECKBOX_STYLES,
+  ERROR_CHECKBOX_STYLES,
+  DEFAULT_TEXTAREA_STYLES,
+  ERROR_TEXTAREA_STYLES,
 } from '../../../component/form';
 
-type TabName = 'input' | 'radio';
+type TabName = 'input' | 'radio' | 'checkbox' | 'textarea' | 'select';
+
 
 /**
  * フォームコンポーネントの動作確認画面。
@@ -22,7 +30,153 @@ export function FormDemoPage(): JSX.Element {
   const [successInput, setSuccessInput] = useState('validated@example.com');
   const [gender, setGender] = useState('');
   const [plan, setPlan] = useState('standard');
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreeNewsLetter, setAgreeNewsLetter] = useState(false);
+  const [description, setDescription] = useState('');
+  const [memo, setMemo] = useState('初期状態では拡大縮小できません');
   const [showError, setShowError] = useState(false);
+  const [country, setCountry] = useState('');
+  // チェックアイコン付きSelect用
+  const [fruit, setFruit] = useState('');
+  const fruitOptions = [
+    { value: 'apple', label: 'りんご' },
+    { value: 'banana', label: 'バナナ' },
+    { value: 'orange', label: 'オレンジ' },
+    { value: 'grape', label: 'ぶどう' },
+    { value: 'other', label: 'その他' },
+  ];
+  // 複数選択用
+  const [colors, setColors] = useState<string[]>([]);
+  const colorOptions = [
+    { value: 'red', label: '赤' },
+    { value: 'blue', label: '青' },
+    { value: 'green', label: '緑' },
+    { value: 'yellow', label: '黄' },
+    { value: 'black', label: '黒' },
+  ];
+  const [animals, setAnimals] = useState<string[]>([]);
+  const animalOptions = [
+    { value: 'dog', label: '犬' },
+    { value: 'cat', label: '猫' },
+    { value: 'bird', label: '鳥' },
+    { value: 'rabbit', label: 'うさぎ' },
+    { value: 'other', label: 'その他' },
+  ];
+
+  function renderSelectTab(): JSX.Element {
+    return (
+      <>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+          Select Component
+        </h2>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            基本スタイル
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Select
+              name="country"
+              value={country}
+              label="国籍"
+              placeholder="国を選択してください"
+              required
+              options={[
+                { value: 'jp', label: '日本' },
+                { value: 'us', label: 'アメリカ' },
+                { value: 'cn', label: '中国' },
+                { value: 'fr', label: 'フランス' },
+                { value: 'other', label: 'その他' },
+              ]}
+              status={showError && country === '' ? 'error' : 'default'}
+              errorMessage="国を選択してください"
+              onValueChange={v => typeof v === 'string' && setCountry(v)}
+            />
+          </div>
+
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            チェックアイコン表示例
+          </h3>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Select
+              name="fruit"
+              value={fruit}
+              label="好きな果物"
+              placeholder="果物を選択してください"
+              options={fruitOptions}
+              onValueChange={v => typeof v === 'string' && setFruit(v)}
+              showCheckIcon={true}
+            />
+          </div>
+
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            複数選択（チェックアイコンなし）
+          </h3>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Select
+              name="colors"
+              value={colors}
+              label="好きな色（複数選択可）"
+              placeholder="色を選択してください"
+              options={colorOptions}
+              onValueChange={v => Array.isArray(v) && setColors(v)}
+              multiple
+            />
+          </div>
+
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            複数選択（チェックアイコンあり）
+          </h3>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Select
+              name="animals"
+              value={animals}
+              label="好きな動物（複数選択可）"
+              placeholder="動物を選択してください"
+              options={animalOptions}
+              onValueChange={v => Array.isArray(v) && setAnimals(v)}
+              multiple
+              showCheckIcon
+            />
+          </div>
+        </section>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.875rem',
+          }}
+        >
+          Submit（バリデーションテスト）
+        </button>
+
+        <div style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f9fafb',
+          border: '2px solid #e5e7eb',
+          borderRadius: '0.5rem',
+        }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+            現在の選択値
+          </h3>
+          <p style={{ marginBottom: '0.5rem' }}>国籍: {country || '（未選択）'}</p>
+          <p style={{ marginBottom: '0.5rem' }}>好きな果物: {fruit || '（未選択）'}</p>
+          <p style={{ marginBottom: '0.5rem' }}>好きな色: {colors.length > 0 ? colors.join(', ') : '（未選択）'}</p>
+          <p style={{ marginBottom: '0.5rem' }}>好きな動物: {animals.length > 0 ? animals.join(', ') : '（未選択）'}</p>
+        </div>
+      </>
+    );
+  }
 
   /**
    * 送信ボタン押下時の処理（デモ用）。
@@ -43,10 +197,10 @@ export function FormDemoPage(): JSX.Element {
       width: '100%',
       padding: '0.75rem 1rem',
       marginBottom: '0.5rem',
-      backgroundColor: isActive ? '#000000' : '#ffffff',
+      backgroundColor: isActive ? '#4b5563' : '#ffffff',
       color: isActive ? '#ffffff' : '#000000',
-      border: '2px solid #000000',
-      borderRight: isActive ? 'none' : '2px solid #000000',
+      border: '2px solid #9ca3af',
+      borderRight: isActive ? 'none' : '2px solid #9ca3af',
       borderRadius: '0.5rem 0 0 0.5rem',
       cursor: 'pointer',
       fontWeight: '600',
@@ -229,15 +383,26 @@ export function FormDemoPage(): JSX.Element {
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: '#4b5563',
+                marginBottom: '0.5rem',
+              }}
+            >
+              ※「プラン選択」は、ラジオボタンON時に別マーク（SVG）を使えるサンプルです。
+            </p>
             <Radio
               name="plan"
               value={plan}
-              label="プラン選択"
+              label="プラン選択（ON時カスタムマーク例）"
               options={[
                 { value: 'free', label: '無料プラン' },
                 { value: 'standard', label: 'スタンダード' },
                 { value: 'premium', label: 'プレミアム' },
               ]}
+              radioIconSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5 9.2 17.5 20 6.5' fill='none' stroke='black' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+              radioMarkColor="#111827"
               styleClasses={DEFAULT_RADIO_STYLES}
               onValueChange={setPlan}
             />
@@ -301,6 +466,172 @@ export function FormDemoPage(): JSX.Element {
     );
   }
 
+  /**
+   * Checkbox タブのコンテンツを描画する。
+   * @returns Checkbox デモコンテンツ
+   */
+  function renderCheckboxTab(): JSX.Element {
+    return (
+      <>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+          Checkbox Component
+        </h2>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            基本スタイル（デフォルトSVG）
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Checkbox
+              name="agreeTerms"
+              checked={agreeTerms}
+              label="利用規約"
+              optionLabel="利用規約に同意する"
+              required
+              status={showError && !agreeTerms ? 'error' : 'default'}
+              errorMessage="同意が必要です"
+              styleClasses={showError && !agreeTerms ? ERROR_CHECKBOX_STYLES : DEFAULT_CHECKBOX_STYLES}
+              onCheckedChange={setAgreeTerms}
+            />
+          </div>
+        </section>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            カスタムSVG + チェック色変更
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Checkbox
+              name="agreeNewsLetter"
+              checked={agreeNewsLetter}
+              label="お知らせ設定"
+              optionLabel="メール通知を受け取る"
+              checkMarkColor="#000000"
+              styleClasses={DEFAULT_CHECKBOX_STYLES}
+              onCheckedChange={setAgreeNewsLetter}
+            />
+          </div>
+        </section>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.875rem',
+          }}
+        >
+          Submit（バリデーションテスト）
+        </button>
+
+        <div style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f9fafb',
+          border: '2px solid #e5e7eb',
+          borderRadius: '0.5rem',
+        }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+            現在の選択値
+          </h3>
+          <p style={{ marginBottom: '0.5rem' }}>利用規約: {agreeTerms ? '同意済み' : '未同意'}</p>
+          <p>メール通知: {agreeNewsLetter ? '有効' : '無効'}</p>
+        </div>
+      </>
+    );
+  }
+
+  /**
+   * Textarea タブのコンテンツを描画する。
+   * @returns Textarea デモコンテンツ
+   */
+  function renderTextareaTab(): JSX.Element {
+    return (
+      <>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+          Textarea Component
+        </h2>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            デフォルト（拡大縮小不可）
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Textarea
+              name="description"
+              value={description}
+              label="説明"
+              placeholder="内容を入力してください"
+              required
+              status={showError && description === '' ? 'error' : 'default'}
+              errorMessage="説明を入力してください"
+              styleClasses={showError && description === '' ? ERROR_TEXTAREA_STYLES : DEFAULT_TEXTAREA_STYLES}
+              onValueChange={setDescription}
+            />
+          </div>
+        </section>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            拡大縮小可能（縦方向）
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Textarea
+              name="memo"
+              value={memo}
+              label="メモ"
+              placeholder="縦方向にリサイズ可能"
+              resizeMode="vertical"
+              styleClasses={DEFAULT_TEXTAREA_STYLES}
+              onValueChange={setMemo}
+            />
+          </div>
+        </section>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.875rem',
+          }}
+        >
+          Submit（バリデーションテスト）
+        </button>
+
+        <div style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f9fafb',
+          border: '2px solid #e5e7eb',
+          borderRadius: '0.5rem',
+        }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+            現在の入力値
+          </h3>
+          <p style={{ marginBottom: '0.5rem' }}>説明: {description || '（未入力）'}</p>
+          <p>メモ: {memo}</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <main style={{ display: 'flex', minHeight: '100vh', padding: '2rem', gap: 0 }}>
       {/* 左側：タブナビゲーション */}
@@ -328,6 +659,27 @@ export function FormDemoPage(): JSX.Element {
           >
             Radio
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('checkbox')}
+            style={getTabStyle('checkbox')}
+          >
+            Checkbox
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('textarea')}
+            style={getTabStyle('textarea')}
+          >
+            Textarea
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('select')}
+            style={getTabStyle('select')}
+          >
+            Select
+          </button>
         </nav>
       </aside>
 
@@ -339,6 +691,9 @@ export function FormDemoPage(): JSX.Element {
       }}>
         {activeTab === 'input' && renderInputTab()}
         {activeTab === 'radio' && renderRadioTab()}
+        {activeTab === 'checkbox' && renderCheckboxTab()}
+        {activeTab === 'textarea' && renderTextareaTab()}
+        {activeTab === 'select' && renderSelectTab()}
       </div>
     </main>
   );
