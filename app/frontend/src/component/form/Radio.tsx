@@ -1,6 +1,9 @@
 import React, { type ChangeEvent } from 'react';
 import type { RadioProps } from './types';
 
+const DEFAULT_RADIO_MARK_SVG =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='7' fill='black'/%3E%3C/svg%3E";
+
 /**
  * ラジオボタングループのテンプレートを描画する。
  * @param props ラジオボタンの表示・値・変更ハンドラ
@@ -16,9 +19,13 @@ export function Radio(props: RadioProps): JSX.Element {
     errorMessage, // エラー時に表示するメッセージ
     showErrorMessage = true, // エラーメッセージをコンポーネント内に表示するかどうか
     required = false, // 必須項目かどうか（ラベルに*を表示）
+    radioIconSrc, // ラジオボタンの中マークに使用するSVG画像URL
+    radioMarkColor = '#000000', // ラジオボタン中マークの色
     styleClasses, // 要素別に適用するスタイルクラス群
     onValueChange, // 値変更時に呼び出すコールバック
   } = props;
+
+  const radioMarkIcon = radioIconSrc ?? DEFAULT_RADIO_MARK_SVG;
 
   /**
    * ラジオボタン変更時に親へ値を通知する。
@@ -41,21 +48,58 @@ export function Radio(props: RadioProps): JSX.Element {
       <div>
         {options.map((option) => (
           <div key={option.value} className={styleClasses?.optionWrapper}>
-            <input
-              type="radio"
-              id={`${name}-${option.value}`}
-              name={name}
-              value={option.value}
-              checked={value === option.value}
-              onChange={handleChange}
-              aria-invalid={status === 'error'}
-              aria-describedby={
-                status === 'error' && errorMessage !== undefined && showErrorMessage
-                  ? `${name}-error`
-                  : undefined
-              }
-              className={styleClasses?.radio}
-            />
+            <label htmlFor={`${name}-${option.value}`} className={styleClasses?.radioWrapper}>
+              <input
+                type="radio"
+                id={`${name}-${option.value}`}
+                name={name}
+                value={option.value}
+                checked={value === option.value}
+                onChange={handleChange}
+                style={{
+                  borderColor:
+                    status === 'error'
+                      ? '#ef4444'
+                      : status === 'default'
+                        ? '#9ca3af'
+                        : '#22c55e',
+                }}
+                aria-invalid={status === 'error'}
+                aria-describedby={
+                  status === 'error' && errorMessage !== undefined && showErrorMessage
+                    ? `${name}-error`
+                    : undefined
+                }
+                className={styleClasses?.radioInput}
+              />
+              <span
+                className={styleClasses?.radioCircle}
+                style={{
+                  borderColor:
+                    status === 'error'
+                      ? '#ef4444'
+                      : status === 'default'
+                        ? '#9ca3af'
+                        : '#22c55e',
+                }}
+              />
+              {value === option.value ? (
+                <span
+                  className={styleClasses?.radioMark}
+                  style={{
+                    backgroundColor: radioMarkColor,
+                    WebkitMaskImage: `url("${radioMarkIcon}")`,
+                    maskImage: `url("${radioMarkIcon}")`,
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                  }}
+                />
+              ) : null}
+            </label>
             <label
               htmlFor={`${name}-${option.value}`}
               className={styleClasses?.optionLabel}
