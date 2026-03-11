@@ -40,6 +40,21 @@ services:
             - sail
         depends_on:
             - backend
+
+    docs-site:
+        image: 'node:20-alpine'
+        working_dir: /app/docs-site
+        ports:
+            - '3000:3000'
+        environment:
+            - NODE_ENV=development
+        volumes:
+            - './docs-site:/app/docs-site'
+        command: sh -c "npm install && npm run start -- --host 0.0.0.0"
+        networks:
+            - sail
+        depends_on:
+            - backend
     
     mysql:
         image: 'mysql:8.4'

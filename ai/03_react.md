@@ -199,8 +199,9 @@ src/
    - 再起動: `./sh/restart.sh`
    - 初期セットアップ: `./sh/setup.sh`
 
-## 運用ルール（React関連コマンド）
+## 運用ルール
 - React 関連のコマンド実行は、直接 `docker compose` や `npm` を叩かず、必ず `sh/react.sh` を使用する。
+- laravel-sail, dockerを使用してnpmコマンドの実行やコンテナ操作を行うこと
 
 ### 追加スクリプト
 - `./sh/react.sh`
