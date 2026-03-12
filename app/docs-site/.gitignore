@@ -10,6 +10,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# src配下のファイルは管理外（フォルダは残す）
-src/*
-!src/
