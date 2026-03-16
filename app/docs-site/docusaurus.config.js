@@ -15,4 +15,13 @@ module.exports = {
       },
     ],
   ],
+  themeConfig: {
+    navbar: {
+      title: 'My Docs',
+      items: [
+        { to: '/typedoc/index.html', label: 'TypeDoc', position: 'right' },
+        { to: '/phpdoc/index.html', label: 'PHPDoc', position: 'right' },
+      ],
+    },
+  },
 };

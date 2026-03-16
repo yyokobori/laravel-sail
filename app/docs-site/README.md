@@ -17,7 +17,10 @@
   ./sh/generate_docs.sh frontend   # TypeScriptのみ
   ./sh/generate_docs.sh backend    # PHPのみ
   ```
-- 生成物は `docs-site/typedoc`, `docs-site/phpdoc` 配下に出力されます。
+- 生成物は `docs-site/static/typedoc`, `docs-site/static/phpdoc` 配下に出力されます。
+- Docusaurus起動後、下記URLで直接閲覧できます：
+  - [TypeDoc](/typedoc/index.html)
+  - [PHPDoc](/phpdoc/index.html)
 
 ## 2. 静的サイトジェネレータ（Docusaurus等）
 - 必要に応じて `docs-site` 配下で `npm install` や `npm run build` などを実行してください。
