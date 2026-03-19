@@ -14,6 +14,6 @@
         "phpdocumentor/phpdocumentor": "^3.9"
     },
     "scripts": {
-        "phpdoc": "phpdoc -d ../backend/app -t static/phpdoc"
+        "phpdoc": "vendor/bin/phpdoc -d ../backend/app -t static/phpdoc"
     }
 }

@@ -19,8 +19,8 @@ module.exports = {
     navbar: {
       title: 'My Docs',
       items: [
-        { to: '/typedoc/index.html', label: 'TypeDoc', position: 'right' },
-        { to: '/phpdoc/index.html', label: 'PHPDoc', position: 'right' },
+        { href: '/typedoc/', label: 'TypeDoc', position: 'right' }, // toはspaのルーティングで、hrefは通常のリンク
+        { href: '/phpdoc/', label: 'PHPDoc', position: 'right' },
       ],
     },
   },
