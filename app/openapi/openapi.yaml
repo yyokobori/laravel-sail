@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Sample User API
+  version: 1.0.0
+  description: フロント先行開発用モックAPI
+
+servers:
+  - url: http://localhost:4010
+
+paths:
+  /users:
+    get:
+      summary: ユーザー一覧取得
+      operationId: getUsers
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "山田 太郎"
+                  email: "taro@example.com"
+                - id: 2
+                  name: "佐藤 花子"
+                  email: "hanako@example.com"
+
+    post:
+      summary: ユーザー作成
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              name: "新規ユーザー"
+              email: "new@example.com"
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              example:
+                id: 3
+                name: "新規ユーザー"
+                email: "new@example.com"
+
+  /users/{id}:
+    get:
+      summary: ユーザー詳細取得
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "山田 太郎"
+                email: "taro@example.com"
+        '404':
+          description: 見つからない
+
+    put:
+      summary: ユーザー更新
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              name: "更新ユーザー"
+              email: "updated@example.com"
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              example:
+                id: 1
+                name: "更新ユーザー"
+                email: "updated@example.com"
+
+    delete:
+      summary: ユーザー削除
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除成功
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "山田 太郎"
+        email:
+          type: string
+          format: email
+          example: "taro@example.com"
