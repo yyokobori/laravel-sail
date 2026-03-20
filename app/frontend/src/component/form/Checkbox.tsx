@@ -8,6 +8,18 @@ const DEFAULT_CHECK_ICON_SVG =
 /**
  * チェックボックスコンポーネントを描画する。
  * @param props チェックボックスの表示・値・変更ハンドラ
+ *   @property name input要素のname属性に使う識別子
+ *   @property checked チェック状態
+ *   @property label ラベル文言（未指定時は非表示）
+ *   @property optionLabel 選択肢のラベル
+ *   @property status 表示状態（default/error）
+ *   @property errorMessage エラー時に表示するメッセージ
+ *   @property showErrorMessage エラーメッセージを表示するか
+ *   @property required 必須項目かどうか
+ *   @property checkIconSrc チェックマークSVG画像URL
+ *   @property checkMarkColor チェックマークの色
+ *   @property styleClasses スタイルクラス指定
+ *   @property onCheckedChange チェック状態変更時のコールバック
  * @returns チェックボックスコンポーネント
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {

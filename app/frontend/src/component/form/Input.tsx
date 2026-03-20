@@ -5,6 +5,17 @@ import type { InputProps } from './types';
 /**
  * 文字列入力欄のテンプレートを描画する。
  * @param props 入力欄の表示・値・変更ハンドラ
+ *   @property name input要素のname/idに使う識別子
+ *   @property value 入力欄に表示する現在値
+ *   @property label 入力欄のラベル文言（未指定時は非表示）
+ *   @property placeholder 未入力時に表示する補助テキスト
+ *   @property kind 入力欄の種別（text/email/password）
+ *   @property status 表示状態（default/error）
+ *   @property errorMessage エラー時に表示するメッセージ
+ *   @property showErrorMessage エラーメッセージを表示するか
+ *   @property required 必須項目かどうか
+ *   @property styleClasses スタイルクラス指定
+ *   @property onValueChange 値変更時のコールバック
  * @returns 入力欄コンポーネント
  */
 export function Input(props: InputProps): JSX.Element {

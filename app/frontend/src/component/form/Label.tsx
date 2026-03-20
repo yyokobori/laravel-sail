@@ -10,6 +10,10 @@ type LabelProps = {
 /**
  * 入力欄用のラベルを描画する。
  * @param props ラベル表示情報
+ *   @property htmlFor 対応するinput要素のid
+ *   @property text ラベルとして表示する文言
+ *   @property className ラベルへ適用するスタイルクラス
+ *   @property required 必須項目かどうか
  * @returns ラベルコンポーネント
  */
 export function Label(props: LabelProps): JSX.Element {

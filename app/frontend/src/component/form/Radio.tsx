@@ -7,6 +7,18 @@ const DEFAULT_RADIO_MARK_SVG =
 /**
  * ラジオボタングループのテンプレートを描画する。
  * @param props ラジオボタンの表示・値・変更ハンドラ
+ *   @property name input要素のname属性に使う識別子
+ *   @property value 選択中の値
+ *   @property options 選択肢リスト
+ *   @property label ラベル文言（未指定時は非表示）
+ *   @property status 表示状態（default/error）
+ *   @property errorMessage エラー時に表示するメッセージ
+ *   @property showErrorMessage エラーメッセージを表示するか
+ *   @property required 必須項目かどうか
+ *   @property radioIconSrc ラジオマークのSVG画像URL
+ *   @property radioMarkColor ラジオマークの色
+ *   @property styleClasses スタイルクラス指定
+ *   @property onValueChange 値変更時のコールバック
  * @returns ラジオボタンコンポーネント
  */
 export function Radio(props: RadioProps): JSX.Element {

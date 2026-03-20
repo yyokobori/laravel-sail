@@ -1,34 +1,71 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 
+
+/**
+ * セレクトボックスの選択肢情報
+ * @property value 選択肢の値
+ * @property label 表示ラベル
+ * @property disabled 選択不可かどうか
+ */
 export type SelectOption = {
+  /** 選択肢の値 */
   value: string;
+  /** 表示ラベル */
   label: string;
+  /** 選択不可の場合true */
   disabled?: boolean;
 };
 
+
+/**
+ * Selectコンポーネントのスタイルクラス指定
+ */
 export type SelectStyleClasses = {
+  /** 外枠のクラス */
   container?: string;
+  /** ラベル部分のクラス */
   label?: string;
+  /** セレクトボックス全体のラッパー */
   selectWrapper?: string;
+  /** セレクト本体のクラス */
   select?: string;
+  /** ドロップダウン矢印のクラス */
   arrow?: string;
+  /** エラーメッセージのクラス */
   errorMessage?: string;
 };
 
+
+/**
+ * Selectコンポーネントのprops
+ */
 export type SelectProps = {
+  /** input要素のname/idに使う識別子 */
   name: string;
+  /** 選択中の値（複数選択時は配列） */
   value: string | string[];
+  /** 選択肢リスト */
   options: SelectOption[];
+  /** ラベル文言（未指定時は非表示） */
   label?: string;
+  /** プレースホルダー（未選択時の補助テキスト） */
   placeholder?: string;
+  /** 表示状態（default/error） */
   status?: 'default' | 'error';
+  /** エラー時に表示するメッセージ */
   errorMessage?: string;
+  /** エラーメッセージを表示するか */
   showErrorMessage?: boolean;
+  /** 必須項目かどうか */
   required?: boolean;
+  /** スタイルクラス指定 */
   styleClasses?: SelectStyleClasses;
+  /** 値変更時のコールバック */
   onValueChange: (value: string | string[]) => void;
-  showCheckIcon?: boolean; // 選択肢の先頭にチェックアイコンを表示するか
+  /** 選択肢の先頭にチェックアイコンを表示するか */
+  showCheckIcon?: boolean;
+  /** 複数選択を許可するか */
   multiple?: boolean;
 };
 
