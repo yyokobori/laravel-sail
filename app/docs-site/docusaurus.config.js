@@ -21,6 +21,8 @@ module.exports = {
       items: [
         { href: '/typedoc/', label: 'TypeDoc', position: 'right' }, // toはspaのルーティングで、hrefは通常のリンク
         { href: '/phpdoc/', label: 'PHPDoc', position: 'right' },
+        // http://localhost:8080/ で起動しているswagger-uiのURLを指定
+        { href: 'http://localhost:8080/', label: 'Swagger UI', position: 'right' },
       ],
     },
   },

@@ -51,8 +51,8 @@ sh/sh/restart.sh
 * info
 * servers
 * paths
-* description（全API必須）
-* operationId（全API必須）
+* description（全スキーマ・全プロパティに必須）
+* operationId（全スキーマ・全プロパティに必須）
 
 ---
 
