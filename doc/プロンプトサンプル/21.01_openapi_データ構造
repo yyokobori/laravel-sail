@@ -1,0 +1,62 @@
+# OpenAPI データ構造作成プロンプト（Copilot用）
+
+以下の条件に従い、OpenAPI（Swagger）の `components.schemas` のみを作成してください。
+**pathsは一切作成しないこと。**
+
+---
+
+## ■ 目的
+
+フロントエンド先行開発のため、APIのデータ構造を先に定義する。
+
+---
+
+## ■ 必須ルール
+* ai/21*.md を確認して生成仕様を厳守する
+* 出力は `components.schemas` のみ
+* YAML形式で記述すること
+
+---
+
+## ■ スキーマ構成
+
+以下の4つを作成すること：
+
+1. Student（レスポンス用）
+2. StudentCreateRequest（作成用）
+3. StudentUpdateRequest（更新用）
+4. StudentListResponse（一覧レスポンス用）
+
+---
+
+## ■ データ項目（Student）
+
+* id（内部ID / cuid）
+* studentId（学籍番号 / string）
+* lastName（姓）
+* firstName（名）
+* enrolledAt（入学日時）
+* term（回期 / integer）
+* tel（電話番号）
+* email（メールアドレス）
+* websiteUrl（URL）
+* postalCode（郵便番号）
+* prefecture（都道府県）
+* city（市区町村）
+* addressLine（番地・建物）
+* statusType（enum: active, leave, graduated）
+* note（備考 / 長文）
+* emergencyContact（ネスト構造）
+
+  * name（氏名）
+  * tel（電話番号）
+
+---
+
+## ■ バリデーション
+
+openapiでは定義しない。
+ただし、enumだけは例外とする。
+
+* enum → enum指定
+

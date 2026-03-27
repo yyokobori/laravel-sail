@@ -1,0 +1,151 @@
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 内部ID（cuid）
+        studentId:
+          type: string
+          description: 学籍番号
+        lastName:
+          type: string
+          description: 姓
+        firstName:
+          type: string
+          description: 名
+        enrolledAt:
+          type: string
+          format: date-time
+          description: 入学日時
+        term:
+          type: integer
+          description: 回期
+        tel:
+          type: string
+          description: 電話番号
+        email:
+          type: string
+          description: メールアドレス
+        websiteUrl:
+          type: string
+          format: uri
+          description: URL
+        postalCode:
+          type: string
+          description: 郵便番号
+        prefecture:
+          type: string
+          description: 都道府県
+        city:
+          type: string
+          description: 市区町村
+        addressLine:
+          type: string
+          description: 番地・建物
+        statusType:
+          type: string
+          description: 在籍状況
+          enum: [active, leave, graduated]
+        note:
+          type: string
+          description: 備考
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+              description: 氏名
+            tel:
+              type: string
+              description: 電話番号
+    StudentCreateRequest:
+      type: object
+      properties:
+        studentId:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        enrolledAt:
+          type: string
+          format: date-time
+        term:
+          type: integer
+        tel:
+          type: string
+        email:
+          type: string
+        websiteUrl:
+          type: string
+          format: uri
+        postalCode:
+          type: string
+        prefecture:
+          type: string
+        city:
+          type: string
+        addressLine:
+          type: string
+        statusType:
+          type: string
+          enum: [active, leave, graduated]
+        note:
+          type: string
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            tel:
+              type: string
+    StudentUpdateRequest:
+      type: object
+      properties:
+        studentId:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        enrolledAt:
+          type: string
+          format: date-time
+        term:
+          type: integer
+        tel:
+          type: string
+        email:
+          type: string
+        websiteUrl:
+          type: string
+          format: uri
+        postalCode:
+          type: string
+        prefecture:
+          type: string
+        city:
+          type: string
+        addressLine:
+          type: string
+        statusType:
+          type: string
+          enum: [active, leave, graduated]
+        note:
+          type: string
+        emergencyContact:
+          type: object
+          properties:
+            name:
+              type: string
+            tel:
+              type: string
+    StudentListResponse:
+      type: object
+      properties:
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'

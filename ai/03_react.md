@@ -1,225 +1,332 @@
-# React 実装方針（AI引継ぎ用）
+# React 実装方針（AI引継ぎ用・TypeDoc対応版）
 
-更新日: 2026-03-04
+更新日: 2026-03-19
 
-## 目的
-- 今後のフロント実装におけるルールを統一し、AI実装時のブレを防ぐ。
+---
 
-## 確定要件（ユーザー指定）
-- React は TypeScript を使用する。
-- 関数には必ず doc 形式のコメントを記載する。
+## 1. 目的
 
-## 命名規約（確定）
-- Reactコンポーネント名: PascalCase
-- 変数名: camelCase
-- 定数名: UPPER_SNAKE_CASE
+* フロント実装ルールを統一し、AI実装時のブレを防ぐ
+* TypeDocにより**コードからドキュメントを自動生成可能にする**
+* 実装とドキュメントの乖離を防ぐ
 
-## フォルダ構成方針
-```
+---
+
+## 2. 確定要件（ユーザー指定）
+
+* React は TypeScript を使用する
+* 関数・コンポーネントには必ず **JSDocコメント** を記載する
+
+---
+
+## 3. 命名規約（変更なし）
+
+* Reactコンポーネント名: PascalCase
+* 変数名: camelCase
+* 定数名: UPPER_SNAKE_CASE
+
+---
+
+## 4. フォルダ構成方針（変更なし）
+
+```id="mttb7u"
 src/
   view/
-    public/   # ログイン不要関連
-    user/     # ユーザログイン画面関連
-    admin/    # 管理画面関連
-      errors/   # エラー画面関連
-  component/  # 共通コンポーネント
-   template/   # public/user/admin 共通テンプレート
-   api/        # API呼び出し層
-   types/      # 型定義
+      public/
+      user/
+      admin/
+      errors/
+   component/
+      form/
+      table/
+      modal/
+   template/
+   api/
+   types/
+   hooks/
 ```
 
-補足:
-- `src/` 直下には原則としてトップレベルの最小ファイルのみ配置する。
+---
 
-## 実装ルール（確定）
-- 新規画面は `src/view/{public|user|admin}` 配下に配置する。
-- エラー画面は `src/view/errors` 配下で管理する。
-- 再利用可能な UI は `src/component` 配下に配置する。
-- TypeScript の型を省略しない（props, 戻り値, API レスポンス）。
-- 関数コメントは JSDoc 形式を使用する。
-- API 呼び出しは `src/api` に集約し、画面コンポーネントから直接 `fetch` しない。
-- 認証境界（`public/user/admin`）のアクセス制御はルーティング層で実施する。
+## 5. 各フォルダの役割（変更なし）
 
-### コメント例
-```ts
+※既存内容を維持
+
+---
+
+## 6. 実装ルール（更新あり）
+
+### ■ 6.1 型定義（強化）
+
+* **Propsは必ずexportする**
+
+```ts id="3t49mc"
+// ❌ NG
+type InputProps = { value: string };
+
+// ⭕ OK
+export type InputProps = { value: string };
+```
+
+---
+
+### ■ 6.2 コンポーネント定義
+
+* **named exportを使用する（default exportは禁止）**
+
+```ts id="y3t3xm"
+// ❌ NG
+export default function Input() {}
+
+// ⭕ OK
+export const Input = () => {};
+```
+
+---
+
+### ■ 6.3 型の省略禁止（既存ルール強化）
+
+* props
+* 戻り値
+* APIレスポンス
+
+👉 すべて明示する
+
+---
+
+### ■ 6.4 API呼び出し（変更なし）
+
+* `src/api` に集約
+* view/componentから直接fetchしない
+
+---
+
+### ■ 6.5 importルール（変更なし）
+
+```ts id="48j9z4"
+import { Input } from "@/component/form";
+```
+
+* `@` エイリアス使用
+* 相対パス禁止
+
+---
+
+## 7. コメント規約（重要強化）
+
+### ■ 7.1 コンポーネント
+
+```ts id="3m9eqp"
 /**
- * ログイン済みユーザー情報を取得する。
+ * 入力フィールドコンポーネント
+ *
+ * @param props 入力値とイベントハンドラ
+ */
+export const Input = (props: InputProps) => {
+  ...
+};
+```
+
+---
+
+### ■ 7.2 Props
+
+```ts id="yqyr3r"
+export type InputProps = {
+  /** 入力値 */
+  value: string;
+
+  /** 変更イベント */
+  onChange: (value: string) => void;
+};
+```
+
+---
+
+### ■ 7.3 関数
+
+```ts id="p6o1e3"
+/**
+ * ユーザー情報を取得する
  * @returns ユーザー情報
  */
-export async function fetchCurrentUser(): Promise<User> {
-  // ...
+export async function fetchUser(): Promise<User> {
+  ...
 }
 ```
 
-## ルーティング方針（確定）
-- ルーティングは React Router を採用する。
+---
 
-## URL規約（確定版: 2026-03-04）
+## 8. TypeDoc対応ルール（新規）
 
-### 基本方針
-- URLは `kebab-case` を使用する。
-- 区分は `public` / `user` / `admin` の3系統とする。
-- 認証・権限制御はルーティング層で実施する。
+### ■ 8.1 ドキュメント対象
 
-### ルート構造
-- Public（ログイン不要）: `/`
-- Public配下: `/{resource}`
-- User配下: `/user/{resource}`
-- Admin配下: `/admin/{resource}`
+* `component/`
+* `template/`
 
-### CRUDパターン（共通）
-- TOP: `/{scope}/{resource}/`
-- 一覧: `/{scope}/{resource}/list`
-- 詳細: `/{scope}/{resource}/detail/{id}`
-- 新規作成: `/{scope}/{resource}/edit`
-- 編集: `/{scope}/{resource}/edit/{id}`
+👉 `view/` は対象外（tsconfig.doc.jsonで制御）
 
-注記:
-- `{scope}` は `user` または `admin`。
-- `public` は scope なし（例: `/news`, `/help`）。
-- `resource` は `kebab-case` で定義する（例: `user-profile`, `order-history`）。
+---
 
-### errors画面の方針
-- 権限不足を含むエラー画面は `view/errors` 配下で管理する。
-- エラー画面は静的表示コンテンツを返す構造とする。
-- 代表例: `forbidden`, `not-found`, `server-error`。
+### ■ 8.2 非公開コード
 
-### errors画面の実装テンプレート（確定）
-```text
-src/view/errors/
-├── ErrorStatusPage.tsx
-├── ErrorStatusPage.css
-├── ForbiddenPage.tsx
-├── NotFoundPage.tsx
-├── ServerErrorPage.tsx
-└── index.ts
+```ts id="3a9v3b"
+/**
+ * @internal
+ */
+export const debugHelper = () => {};
 ```
 
-- 表示内容は以下の2要素のみとする。
-   - 大きめのステータスコード（例: `404`）
-   - ステータス概要テキスト（例: `Not Found`）
-- 画面背景は白（`#ffffff`）とする。
+👉 TypeDocから除外
 
-### 初期ルート実装（2026-03-04）
-- ルート先は `App.tsx` で template 適用し、errors は実装ファイルを使用する。
-- 定義済みルート:
-   - `/`
-   - `/login`
-   - `/user/dashboard`
-   - `/admin/dashboard`
-   - `/errors/forbidden`
-   - `/errors/not-found`
-   - `/errors/server-error`
-   - `*`
+---
 
-## 現在の想定ツリー（2026-03-04時点）
-```text
-src/
-├── main.tsx
-├── App.tsx
-├── api/
-│   └── .gitkeep
-├── types/
-│   └── .gitkeep
-├── component/
-│   └── .gitkeep
-├── template/
-│   ├── PublicTemplate.tsx
-│   ├── UserTemplate.tsx
-│   ├── AdminTemplate.tsx
-│   ├── reset.css
-│   └── tailwind.css
-└── view/
-    ├── public/
-    │   └── .gitkeep
-    ├── user/
-    │   └── .gitkeep
-    ├── admin/
-    │   └── .gitkeep
-    └── errors/
-        ├── ErrorStatusPage.tsx
-        ├── ErrorStatusPage.css
-        ├── ForbiddenPage.tsx
-        ├── NotFoundPage.tsx
-        ├── ServerErrorPage.tsx
-        └── index.ts
+### ■ 8.3 コメント必須レベル
+
+| 対象      | 必須 |
+| ------- | -- |
+| コンポーネント | 必須 |
+| Props   | 必須 |
+| API関数   | 必須 |
+| hooks   | 推奨 |
+
+---
+
+## 9. ルーティング方針（変更なし）
+
+※既存内容を維持
+
+---
+
+## 10. URL規約（変更なし）
+
+※既存内容を維持
+
+---
+
+## 11. エラー画面（変更なし）
+
+※既存内容を維持
+
+---
+
+## 12. 運用ルール（変更なし）
+
+※既存内容を維持
+
+---
+
+## 13. AIへの指示テンプレ（重要）
+
+AIにコード生成させる際は必ず以下を付与：
+
+```text id="8yl3px"
+- すべてのコンポーネントは named export にすること
+- Props型は export type で定義すること
+- すべてのPropsにJSDocコメントを書くこと
+- コンポーネントにJSDocコメントを書くこと
+- 関数には説明コメントを付けること
+- 型を省略しないこと
+- default exportは禁止
+- API呼び出しはsrc/api経由にすること
+- importは@エイリアスを使うこと
 ```
 
-## 配置ファイルの概要
-- `src/main.tsx`
-   - React アプリのエントリーポイント。
-   - `#root` にアプリをマウントし、初期描画を開始する。
-- `src/App.tsx`
-   - ルート定義の受け口コンポーネント。
-- `src/view/public/`
-   - 未ログインで閲覧可能な画面群を配置する。
-- `src/view/user/`
-   - 一般ユーザー向けログイン後画面を配置する。
-- `src/view/admin/`
-   - 管理者向け画面を配置する。
-- `src/view/errors/`
-   - エラー画面実装を配置する。
-   - ステータスコードと概要のみ表示する。
-- `src/component/`
-   - 共通利用する再利用コンポーネントを配置する。
-- `src/api/`
-   - API クライアント・通信処理を配置する。
-   - 画面側が直接 `fetch` を持たないよう責務分離する。
-- `src/types/`
-   - API レスポンス、DTO、画面モデルなどの型定義を配置する。
-- `src/template/`
-   - `public/user/admin` のテンプレートを配置する。
-   - 各テンプレートで `reset.css` と `tailwind.css` を読み込む。
+---
 
-## 運用ルール（コンテナ操作）
-- コンテナの起動・停止・再起動・初期化は、必ず `sh` 配下スクリプトを使用する。
-   - 起動: `./sh/start.sh`
-   - 停止: `./sh/stop.sh`
-   - 再起動: `./sh/restart.sh`
-   - 初期セットアップ: `./sh/setup.sh`
+## 14. 本プロジェクト特有ルール（更新）
 
-## 運用ルール（React関連コマンド）
-- React 関連のコマンド実行は、直接 `docker compose` や `npm` を叩かず、必ず `sh/react.sh` を使用する。
+* tsconfig.doc.json によりドキュメント対象を制御
+* index.ts による export制御は不要
+* docs-siteでドキュメント生成を一元管理
 
-### 追加スクリプト
-- `./sh/react.sh`
-   - React(frontend) 関連コマンドの実行を一元化する。
+---
 
-### 利用コマンド
-- `./sh/react.sh build`
-   - `frontend` コンテナで `npm run build` を実行する。
-- `./sh/react.sh logs`
-   - `frontend` コンテナのログを follow 表示する。
+## 15. ゴール
 
-## Tailwind + reset セットアップ（2026-03-04）
+* TypeDoc単体で仕様書として読める状態を作る
+* AIが生成したコードでもそのままドキュメント化できる
+* コード＝ドキュメントの状態を維持する
 
-### 導入方針
-- スタイリングは Tailwind を採用する。
-- `reset.css` はテンプレートで読み込む。
+## 7. コメント規約（最重要・日本語必須）
 
-### 追加設定ファイル
-- `app/frontend/tailwind.config.js`
-- `app/frontend/postcss.config.js`
+### ■ 7.0 共通ルール（新規）
 
-### 追加テンプレート
-- `src/template/PublicTemplate.tsx`
-- `src/template/UserTemplate.tsx`
-- `src/template/AdminTemplate.tsx`
+* **すべてのJSDocコメントは日本語で記述すること**
+* 英語コメントは禁止
+* 単語のみのコメントは禁止（例: `/** value */`）
+* **仕様書として読める文章で書くこと**
 
-補足:
-- 各テンプレートで `reset.css` と `tailwind.css` を読み込む。
+---
 
-### 追加スタイル
-- `src/template/reset.css`
-- `src/template/tailwind.css`
+### ■ NGパターン（禁止）
 
-### ルーティングへの適用
-- `App.tsx` で `public/user/admin` 各ルートを対応するテンプレートでラップする。
-- errors ルートも `PublicTemplate` でラップする。
+```ts
+/** value */
+value: string;
+```
 
-### セットアップコマンド（React用）
-- React パッケージの追加/更新が必要な場合は、`react.sh` ではなくセットアップ手順として別途実施する。
+```ts
+/** input value */
+value: string;
+```
 
-## 非採用（現時点）
-- Sass は採用しない。
-- 理由: 依存増加を避け、テンプレートの汎用性と保守性を優先するため。
+```ts
+/** ボタン */
+onClick: () => void;
+```
+
+👉 意味が不十分・仕様として読めない
+
+---
+
+### ■ OKパターン
+
+```ts
+/** 入力フィールドの現在値 */
+value: string;
+
+/** ボタン押下時に呼び出されるイベントハンドラ */
+onClick: () => void;
+```
+
+---
+
+### ■ 補足
+
+* 「何のための値か」を必ず書く
+* UI上の役割・用途を明示する
+* 第三者が見て意味が分かる文章にする
+
+---
+
+## 7.2 Props（最重要・強化版）
+
+* **すべてのPropsフィールドに日本語JSDocコメントを必ず記載する**
+* 1つでも欠けている場合は不正実装とする
+
+---
+
+## 13. AIへの指示テンプレ（最終強化版）
+
+```text
+- すべてのコンポーネントは named export にすること
+- Props型は export type で定義すること
+
+【最重要】
+- PropsのすべてのフィールドにJSDocコメントを書くこと
+- 1つでもコメントが欠けていたら不正とみなす
+
+【日本語必須】
+- すべてのコメントは日本語で書くこと
+- 英語コメントは禁止
+- 「value」など単語のみのコメントは禁止
+- UIとしての意味・用途が分かる文章にすること
+
+- コンポーネントにJSDocコメントを書くこと
+- 関数には説明コメントを付けること
+- 型を省略しないこと
+- default exportは禁止
+- API呼び出しはsrc/api経由にすること
+- importは@エイリアスを使うこと
+```

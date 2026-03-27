@@ -20,15 +20,11 @@ LOCAL_DIR="$(cd "$ROOT_DIR/.." && pwd)/conf/local"
 
 # copy helper function
 copy_with_check(){
-  local src="$1" dest="$2"
-  if [ -f "$src" ]; then
-    if [ -f "$dest" ] && [ "$dest" -nt "$src" ]; then
-      echo "警告: $dest の方が新しいため $src で上書きしません。処理を中止します。"
-      exit 1
+    local src="$1" dest="$2"
+    if [ -f "$src" ]; then
+        cp "$src" "$dest"
+        echo "コピー: $src -> $dest"
     fi
-    cp "$src" "$dest"
-    echo "コピー: $src -> $dest"
-  fi
 }
 
 if [ ! -f "$BACKEND_DIR/.env" ]; then
@@ -47,41 +43,22 @@ fi
 cp "$BACKEND_DIR/.env" "$APP_DIR/.env"
 echo "同期: $BACKEND_DIR/.env -> $APP_DIR/.env"
 
-# === 重要な設定項目のバリデーション ===
-# デグレード（機能喪失）を防ぐため、必須設定項目をチェック
-validate_env_keys() {
-  local env_file="$1"
-  local required_keys=(
-    "DB_HOST" "DB_PORT" "DB_DATABASE" "DB_USERNAME" "DB_PASSWORD"
-    "APP_URL" "VITE_PORT" "VITE_API_BASE_URL"
-    "LOG_CHANNEL" "LOG_LEVEL"
-  )
-  
-  local missing_keys=()
-  for key in "${required_keys[@]}"; do
-    if ! grep -q "^${key}=" "$env_file"; then
-      missing_keys+=("$key")
-    fi
-  done
-  
-  if [ ${#missing_keys[@]} -gt 0 ]; then
-    echo "⚠️  警告: 以下の必須設定項目が .env に見つかりません:"
-    printf '   - %s\n' "${missing_keys[@]}"
-    echo ""
-    echo "これはデグレード（機能喪失）の可能性があります。"
-    echo "確認事項:"
-    echo "  1. conf/local/.env.example が最新に更新されているか確認"
-    echo "  2. app/backend/.env と conf/local/.env.example の内容を同期"
-    echo ""
-    read -p "これは意図的ですか？ (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      exit 1
-    fi
-  fi
-}
 
-validate_env_keys "$BACKEND_DIR/.env"
+
+# === .envと.env.sampleの差分確認 ===
+echo "[INFO] .envとconf/local/.env.sampleの差分を確認します"
+DIFF_OUTPUT=$("$ROOT_DIR/diff_env.sh")
+if [ -z "$DIFF_OUTPUT" ]; then
+  echo "差分はありません。処理を続行します。"
+else
+  echo "$DIFF_OUTPUT"
+  echo "上記diffを確認し、問題があれば修正してください。"
+  read -p "このまま続行しますか？ (y/N) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    exit 1
+  fi
+fi
 
 if [ ! -f "$APP_DIR/docker-compose.yml" ] && [ ! -f "$APP_DIR/compose.yaml" ]; then
   echo "エラー: docker-compose.yml または compose.yaml が見つかりません。"
@@ -177,7 +154,11 @@ echo ""
 echo "確認:"
 echo "  - バックエンド: http://localhost"
 echo "  - フロントエンド: http://localhost:8000"
+echo "  - ドキュメントサイト: http://localhost:3000"
+echo "  - Swagger UI: http://localhost:8080"
+echo "  - モックAPI: http://localhost:4010"
 echo "  - コンテナログ確認: cd \$PWD && docker compose logs -f"
 echo "  - 停止: ./stop.sh"
 echo "  - 再起動: ./restart.sh"
+echo "  - ドキュメント生成: ./build_doc.sh"
 echo ""

@@ -1,0 +1,19 @@
+{
+    "name": "root/docs-site",
+    "autoload": {
+        "psr-4": {
+            "Root\\DocsSite\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "yy"
+        }
+    ],
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "^3.9"
+    },
+    "scripts": {
+        "phpdoc": "vendor/bin/phpdoc -d ../backend/app -t static/phpdoc"
+    }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "docs-site",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "docusaurus start --host 0.0.0.0 --poll",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^2.4.3",
+    "@docusaurus/preset-classic": "^2.4.3",
+    "cors": "^2.8.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "resolutions": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
