@@ -67,6 +67,8 @@ export type SelectProps = {
   showCheckIcon?: boolean;
   /** 複数選択を許可するか */
   multiple?: boolean;
+  /** 選択肢リストの左インデントを有効化するか */
+  enableOptionIndent?: boolean;
 };
 
 export const Select: React.FC<SelectProps> = ({
@@ -83,6 +85,7 @@ export const Select: React.FC<SelectProps> = ({
   onValueChange,
   showCheckIcon = false,
   multiple = false,
+  enableOptionIndent = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState<number | null>(null);
@@ -188,6 +191,8 @@ export const Select: React.FC<SelectProps> = ({
     : 'border-template-gray-400 focus:border-template-gray-400';
   const dropdownClass = 'shadow-lg';
   const uiClass = `${baseClass} ${borderClass} ${dropdownClass} flex items-center justify-between cursor-pointer ${styleClasses.select ?? ''}`;
+  const optionIndentClass = enableOptionIndent ? 'px-4' : 'px-0';
+  const optionIconPlaceholderClass = enableOptionIndent ? 'w-5' : 'w-0';
 
   return (
     <div className={styleClasses.container ?? 'block'}>
@@ -271,12 +276,12 @@ export const Select: React.FC<SelectProps> = ({
                 key={opt.value}
                 role="option"
                 aria-selected={checked}
-                className={`px-4 py-2 cursor-pointer flex items-center gap-2 ${checked ? 'bg-template-gray-200 font-bold' : ''} ${opt.disabled ? 'opacity-50 pointer-events-none' : ''} ${(highlight === i || (!opt.disabled && open && highlight === i)) ? 'bg-gray-100' : ''} hover:bg-gray-100`}
+                className={`${optionIndentClass} py-2 cursor-pointer flex items-center gap-2 ${checked ? 'bg-template-gray-200 font-bold' : ''} ${opt.disabled ? 'opacity-50 pointer-events-none' : ''} ${(highlight === i || (!opt.disabled && open && highlight === i)) ? 'bg-gray-100' : ''} hover:bg-gray-100`}
                 onClick={() => !opt.disabled && handleSelect(opt.value)}
                 tabIndex={-1}
                 onMouseEnter={() => setHighlight(i)}
               >
-                <span style={{ display: 'inline-flex', width: 20, justifyContent: 'center' }}>
+                <span className={`inline-flex justify-center ${optionIconPlaceholderClass}`}>
                   {showCheckIcon && checked && (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path d="M4 12.5 9.2 17.5 20 6.5" fill="none" stroke="black" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />

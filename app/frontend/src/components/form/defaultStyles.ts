@@ -1,4 +1,5 @@
 import type {
+  DatapickerStyleClasses,
   CheckboxStyleClasses,
   InputStyleClasses,
   RadioStyleClasses,
@@ -154,4 +155,21 @@ export const SUCCESS_TEXTAREA_STYLES: TextareaStyleClasses = {
   textarea:
     'block w-full bg-template-white border-2 border-template-success-500 rounded-lg px-4 py-2.5 text-template-gray-900 placeholder-template-gray-400 focus:outline-none focus:border-template-success-600 transition-colors',
   errorMessage: 'block text-sm font-medium text-template-success-600 mt-1.5',
+};
+
+/**
+ * Datapicker コンポーネントのデフォルトスタイル定義（Tailwind CSS）。
+ */
+export const DEFAULT_DATAPICKER_STYLES: DatapickerStyleClasses = {
+  container: 'relative block',
+  input:
+    'block w-full bg-template-white border-2 border-template-gray-400 rounded-lg pr-12 pl-4 py-2.5 text-template-gray-900 placeholder-template-gray-400 focus:outline-none focus:border-template-gray-500 transition-colors',
+  icon: 'absolute right-3 top-1/2 -translate-y-1/2 text-template-gray-500',
+  calendar:
+    'absolute z-30 mt-2 w-[22rem] rounded-lg border-2 border-template-gray-300 bg-white opacity-100 p-4 shadow-lg',
+  header: 'relative z-40 mb-3 flex items-center justify-between gap-2',
+  day: 'h-9 w-9 rounded-full text-sm transition-colors',
+  selectedDay: 'bg-red-100 text-template-gray-900 rounded-md font-semibold',
+  today: 'bg-red-100 text-template-gray-900 rounded-full font-semibold',
+  footer: 'mt-3 grid grid-cols-3 items-center text-sm font-semibold',
 };

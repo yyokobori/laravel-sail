@@ -60,6 +60,8 @@ export type SelectProps = {
   styleClasses?: SelectStyleClasses;
   /** 値変更時のコールバック */
   onValueChange: (value: string) => void;
+  /** 選択肢リストの左インデントを有効化するか */
+  enableOptionIndent?: boolean;
 };
 
 /**
@@ -286,4 +288,68 @@ export type TextareaProps = {
   styleClasses?: TextareaStyleClasses;
   /** 値変更時のコールバック */
   onValueChange: (value: string) => void;
+};
+
+/** Datepicker のロケール種別 */
+export type DatapickerLocale = 'ja' | 'en';
+
+/** Datepicker の週始まり種別 */
+export type DatapickerStartOfWeek = 'sun' | 'mon';
+
+/** Datepicker の週末カラー指定 */
+export type DatapickerWeekendColors = {
+  /** 日曜日の文字色 */
+  sunday: string;
+  /** 土曜日の文字色 */
+  saturday: string;
+};
+
+/** Datepicker コンポーネントのスタイルクラス指定 */
+export type DatapickerStyleClasses = {
+  /** 外枠のクラス */
+  container?: string;
+  /** 入力欄のクラス */
+  input?: string;
+  /** カレンダーアイコンのクラス */
+  icon?: string;
+  /** カレンダーポップアップのクラス */
+  calendar?: string;
+  /** ヘッダー領域のクラス */
+  header?: string;
+  /** 日付セルのクラス */
+  day?: string;
+  /** 選択中日付セルのクラス */
+  selectedDay?: string;
+  /** 今日の日付セルのクラス */
+  today?: string;
+  /** フッター領域のクラス */
+  footer?: string;
+};
+
+/** Datepicker コンポーネントの props */
+export type DatapickerProps = {
+  /** input要素のname/idに使う識別子 */
+  name: string;
+  /** 選択中の日付（未選択は null） */
+  value: Date | null;
+  /** 日付変更時のコールバック */
+  onChange: (date: Date | null) => void;
+  /** ラベル文言（未指定時は非表示） */
+  label?: string;
+  /** ロケール */
+  locale?: DatapickerLocale;
+  /** 週始まり */
+  startOfWeek?: DatapickerStartOfWeek;
+  /** 週末カラー */
+  weekendColors?: DatapickerWeekendColors;
+  /** 表示フォーマット */
+  format?: string;
+  /** プレースホルダー */
+  placeholder?: string;
+  /** 選択可能な最小日付 */
+  minDate?: Date;
+  /** 選択可能な最大日付 */
+  maxDate?: Date;
+  /** スタイルクラス指定 */
+  styleClasses?: DatapickerStyleClasses;
 };

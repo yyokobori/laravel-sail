@@ -5,6 +5,7 @@ import {
   Radio,
   Checkbox,
   Textarea,
+  Datapicker,
   DEFAULT_INPUT_STYLES,
   ERROR_INPUT_STYLES,
   SUCCESS_INPUT_STYLES,
@@ -14,9 +15,10 @@ import {
   ERROR_CHECKBOX_STYLES,
   DEFAULT_TEXTAREA_STYLES,
   ERROR_TEXTAREA_STYLES,
-} from '../../../component/form';
+  DEFAULT_DATAPICKER_STYLES,
+} from '../../../components/form';
 
-type TabName = 'input' | 'radio' | 'checkbox' | 'textarea' | 'select';
+type TabName = 'input' | 'radio' | 'checkbox' | 'textarea' | 'select' | 'datapicker';
 
 
 /**
@@ -62,6 +64,81 @@ export function FormDemoPage(): JSX.Element {
     { value: 'rabbit', label: 'うさぎ' },
     { value: 'other', label: 'その他' },
   ];
+  const [birthday, setBirthday] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(new Date(2026, 3, 2));
+
+  function renderDatapickerTab(): JSX.Element {
+    return (
+      <>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+          Datapicker Component
+        </h2>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            基本スタイル
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Datapicker
+              name="birthday"
+              label="誕生日"
+              value={birthday}
+              onChange={setBirthday}
+              locale="ja"
+              startOfWeek="sun"
+              format="YYYY/MM/DD(ddd)"
+              placeholder="YYYY/MM/DD"
+              styleClasses={DEFAULT_DATAPICKER_STYLES}
+            />
+          </div>
+        </section>
+
+        <section style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1.5rem' }}>
+            日付範囲と週始まり指定
+          </h3>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <Datapicker
+              name="startDate"
+              label="開始日（2026年のみ選択可）"
+              value={startDate}
+              onChange={setStartDate}
+              locale="en"
+              startOfWeek="mon"
+              format="YYYY/MM/DD(ddd)"
+              placeholder="YYYY/MM/DD"
+              minDate={new Date(2026, 0, 1)}
+              maxDate={new Date(2026, 11, 31)}
+              weekendColors={{ sunday: 'text-red-500', saturday: 'text-blue-500' }}
+              styleClasses={DEFAULT_DATAPICKER_STYLES}
+            />
+          </div>
+        </section>
+
+        <div
+          style={{
+            marginTop: '2rem',
+            padding: '1.5rem',
+            backgroundColor: '#f9fafb',
+            border: '2px solid #e5e7eb',
+            borderRadius: '0.5rem',
+          }}
+        >
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+            現在の選択値
+          </h3>
+          <p style={{ marginBottom: '0.5rem' }}>
+            誕生日: {birthday === null ? '（未選択）' : birthday.toLocaleDateString('ja-JP')}
+          </p>
+          <p>
+            開始日: {startDate === null ? '（未選択）' : startDate.toLocaleDateString('ja-JP')}
+          </p>
+        </div>
+      </>
+    );
+  }
 
   function renderSelectTab(): JSX.Element {
     return (
@@ -680,6 +757,13 @@ export function FormDemoPage(): JSX.Element {
           >
             Select
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('datapicker')}
+            style={getTabStyle('datapicker')}
+          >
+            Datapicker
+          </button>
         </nav>
       </aside>
 
@@ -694,6 +778,7 @@ export function FormDemoPage(): JSX.Element {
         {activeTab === 'checkbox' && renderCheckboxTab()}
         {activeTab === 'textarea' && renderTextareaTab()}
         {activeTab === 'select' && renderSelectTab()}
+        {activeTab === 'datapicker' && renderDatapickerTab()}
       </div>
     </main>
   );

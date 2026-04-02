@@ -3,6 +3,7 @@ export { Input } from './Input';
 export { Radio } from './Radio';
 export { Checkbox } from './Checkbox';
 export { Textarea } from './Textarea';
+export { Datapicker } from './Datapicker';
 export {
   DEFAULT_INPUT_STYLES,
   ERROR_INPUT_STYLES,
@@ -16,6 +17,7 @@ export {
   DEFAULT_TEXTAREA_STYLES,
   ERROR_TEXTAREA_STYLES,
   SUCCESS_TEXTAREA_STYLES,
+  DEFAULT_DATAPICKER_STYLES,
 } from './defaultStyles';
 
 export type {
@@ -34,4 +36,9 @@ export type {
   SelectOption,
   SelectProps,
   SelectStyleClasses,
+  DatapickerLocale,
+  DatapickerStartOfWeek,
+  DatapickerWeekendColors,
+  DatapickerProps,
+  DatapickerStyleClasses,
 } from './types';
